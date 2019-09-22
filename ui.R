@@ -5,6 +5,8 @@ library(ggplot2)
 library(leaflet)
 library(DT)
 library(tidyverse)
+library(googleway)
+library(ggmap)
 
 
 ui <- fluidPage(
