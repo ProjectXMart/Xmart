@@ -5,7 +5,7 @@ server <- function(input, output) {
   observeEvent(input$button,{
   
   ######Single Option Trade Area Calculation####
-    register_google(key="AIzaSyD6AfICWEZMcI40_Alta3JTLlHD-im2LRk")
+    register_google(key="")
     
     jio<-geocode("18 york st, toronto, on m5j 0b2, canada",output ="latlona", source ="google")
     
@@ -47,7 +47,7 @@ server <- function(input, output) {
  write.csv(tradearea,"C:/Users/hkumar062/Downloads/tradearea_new.csv")
   
     output$map <-renderGoogle_map({
-    map_key <- "AIzaSyD6AfICWEZMcI40_Alta3JTLlHD-im2LRk"
+    map_key <- ""
     set_key(key =map_key)
     google_map(data = tradearea, key = map_key) %>%
       add_markers(lat = "Lat.x", lon = "Lng.y", info_window = "FSA")
