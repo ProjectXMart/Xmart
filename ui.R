@@ -6,7 +6,6 @@ library(leaflet)
 library(DT)
 library(tidyverse)
 library(googleway)
-library(ggmap)
 
 
 ui <- fluidPage(
@@ -17,7 +16,8 @@ ui <- fluidPage(
              tags$head(
                  # Include our custom CSS
                  includeCSS("C:/Users/hkumar062/Documents/New folder/X-MART/www/styles.css"),
-                 includeCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css")
+                 includeCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"),
+                 tags$head(includeScript("C:/Users/hkumar062/Documents/New folder/X-MART/www/mapsP.js"))
                  
                  
              ),
@@ -46,7 +46,20 @@ ui <- fluidPage(
                  ),
                  
                  mainPanel(
-                     leaflet()
+                     #tags$div(id="map",
+                     #tags$script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVA9q8jmfoQmpdMU4Vem5LBKivdFbijMU&callback=initMap"
+                     #google_mapOutput(outputId = "map", height = 100)
+                    # df <- data.frame(lat = -79.347015,
+                     #                 lon = 43.651070,
+                     #                 info = '<div id="bodyContent"><iframe width="640" height="390" src="//www.youtube.com/embed/a8UOzBUZxCw" frameborder="0" allowfullscreen></iframe></div>'),
+                     
+                    # google_map(key = 'AIzaSyAVA9q8jmfoQmpdMU4Vem5LBKivdFbijMU', height = 100, search_box = T) %>%
+                      #   add_markers(data = df, info_window = "info")
+                   google_mapOutput(outputId = "map")
+                     
+                     
+                  
+                                    
                  )),
              # hr(),
              fluidRow( column=4,
@@ -67,9 +80,19 @@ ui <- fluidPage(
                                              # plotOutput("M3",height = "400px")
                                     )
                            ), 
-                            tabPanel("Location", uiOutput("Categories")), 
-                          
-                            tabPanel("Category")
+                           tabPanel("Location", verbatimTextOutput("summary"),fluidRow(style = "border-bottom: 1px solid rgba(0, 0, 0, .2);",
+                                                                                       column(3, offset = 1, br(), br(),br(),
+                                                                                              textOutput("m1_1"),tags$head(tags$style("#m1_1{font-weight: bold; font-size: 120%; text-align: left; vertical-align: middle;}")),
+                                                                                              textOutput("m1_2"),tags$head(tags$style("#m1_2{font-size: 100%; opacity: 0.75; text-align: left; vertical-align: top;}"))),
+                                                                                       column(8,tags$h4("Top Retail Category Opportunity",align = "left"), plotOutput(outputId = "Mall1", height = "200px"))),
+                                    fluidRow(style = "border_bottom: 1px solid rgba(0, 0, 0, .2);",
+                                             column(3, offset = 1, br(),
+                                                    textOutput("m2_1"),tags$head(tags$style("#m2_1{font-weight: bold;font-size: 120%; text-align: left; vertical-align: middle;}")),
+                                                    textOutput("m2_2"),tags$head(tags$style("#m2_2{font-size: 100%; opacity: 0.75; text-align: left; vertical-align: top;}"))),
+                                             column(8, plotOutput(outputId = "Mall2", height = "200px")))), 
+                           
+                           tabPanel("Category", tableOutput("table"),fluidRow(column(1),style = "border-bottom: 1px solid rgba(0, 0, 0, .2);",
+                                                                              column(8,tags$h4("Brand Index",align = "left",opacity = 0.4), plotOutput(outputId = "b1", height = "200px"))))
                        )
                        
              )))
