@@ -47,13 +47,12 @@ ui <- fluidPage(
                  
                  mainPanel(
                      #tags$div(id="map",
-                     #tags$script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVA9q8jmfoQmpdMU4Vem5LBKivdFbijMU&callback=initMap"
-                     #google_mapOutput(outputId = "map", height = 100)
+                    
                     # df <- data.frame(lat = -79.347015,
                      #                 lon = 43.651070,
                      #                 info = '<div id="bodyContent"><iframe width="640" height="390" src="//www.youtube.com/embed/a8UOzBUZxCw" frameborder="0" allowfullscreen></iframe></div>'),
                      
-                    # google_map(key = 'AIzaSyAVA9q8jmfoQmpdMU4Vem5LBKivdFbijMU', height = 100, search_box = T) %>%
+                   
                       #   add_markers(data = df, info_window = "info")
                    google_mapOutput(outputId = "map")
                      
