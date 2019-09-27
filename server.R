@@ -1,4 +1,61 @@
-server = function(input, output) {
+library(googleway)
+library(geosphere)
+library(ggmap)
+server <- function(input, output) {
+  observeEvent(input$button,{
+  
+  ######Single Option Trade Area Calculation####
+    register_google(key="AIzaSyD6AfICWEZMcI40_Alta3JTLlHD-im2LRk")
+    
+    jio<-geocode("18 york st, toronto, on m5j 0b2, canada",output ="latlona", source ="google")
+    
+    lati<-jio$lat
+    longi<-jio$lon
+    
+    a<-c(longi,lati)
+    
+    fsacentroids <- read.csv("C:/Users/hkumar062/Desktop/X_MART/www/FSACentroids.csv",stringsAsFactors = FALSE)
+      for (i in 1:nrow(fsacentroids)){
+        
+        b<-c(fsacentroids$Lng[i],fsacentroids$Lat[i])
+        fsacentroids$geodis[i]<-distm(a,b, fun = distHaversine)
+        
+      }
+    
+    fsacentroids$geodiskm<-fsacentroids$geodis/1000
+    
+    tafsa<-subset(fsacentroids,geodiskm<=input$Radius)
+    
+    pccentroids<-read.csv("C:/Users/hkumar062/Downloads/Lat Long Canada.csv",stringsAsFactors = FALSE)
+    
+    tapccentroids<-merge(tafsa,pccentroids,by="FSA")
+
+    #names(tapccentroids)    
+    # write.csv(jio,"C:/Users/hkumar062/Downloads/jio1.csv")
+   # str(tapccentroids)
+    
+    for (i in 1:nrow(tapccentroids)){
+      
+      b<-c(as.numeric(tapccentroids$Lng.x[i]),as.numeric(tapccentroids$Lat.x[i]))
+            tapccentroids$geodis[i]<-distm(a,b, fun = distHaversine)
+      
+    }
+    
+    tapccentroids$geodiskm<-tapccentroids$geodis/1000
+    
+    tradearea<-subset(tapccentroids,geodiskm<=input$Radius)
+ write.csv(tradearea,"C:/Users/hkumar062/Downloads/tradearea_new.csv")
+  
+    output$map <-renderGoogle_map({
+    map_key <- "AIzaSyD6AfICWEZMcI40_Alta3JTLlHD-im2LRk"
+    set_key(key =map_key)
+    google_map(data = tradearea, key = map_key) %>%
+      add_markers(lat = "Lat.x", lon = "Lng.y", info_window = "FSA")
+    
+    })
+  }
+  )
+  
   p <- reactive({
     
     persona <- data.frame(Segmentation = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), 
@@ -150,61 +207,18 @@ server = function(input, output) {
   })
   
   
-  #Render Mall category Breakdown
-    output$Categories <- renderUI({
-        lapply(1:1, function(i){
-            
-            fluidRow(style = "border-bottom: 1px solid rgba(0, 0, 0, .2);",
-                     column(3, offset = 1, br(), br(),br(),
-                            textOutput("m1_1"),tags$head(tags$style("#m1_1{font-weight: bold; font-size: 120%; text-align: left; vertical-align: middle;}")),
-                            htmlOutput("m1_2"),tags$head(tags$style("#m1_2{font-size: 100%; opacity: 0.75; text-align: left; vertical-align: top;}"))),
-                     column(8,tags$h4("Top Retail Category Opportunity",align = "left"), uiOutput("c1")))
-            
-        })
-    })
   
-  #fill color
-    color = c("#ab1818","#cc4b14","#e97809", "#ffa600")
+  output$b1<- renderPlot({ 
     
-    
-    #mall 1 should be pre-ordered
-    output$c1 <- renderUI({
-       lapply(1:nrow(mall1()), function(i){
-           b_name = paste("hideshow",i,sep="")
-           brand = paste("b",i,sep="")
-          fluidRow(column(1,br(),renderText(as.character(mall1()[i,1]))),column(1,align = "center",offset = 0,useShinyjs(),div(style = "margin-top: 12px; margin-right: 0px",actionButton(b_name,class="expand_more_10px", type="button" ,
-                                                                                          tags$span(class="caret")))),column(10,offset = 0,align = "left",style='padding:0px;',
-          renderPlot(ggplot(mall1()[i,], aes(x = reorder(section, Proportion), y = Proportion,fill =section)) +
-                         geom_bar(stat = "identity",width = 0.9) +coord_flip()+
-                         theme_minimal() +
-                         ylab(NULL) +
-                         xlab(NULL) + 
-                         theme(legend.position = "none", panel.grid = element_blank(), 
-                              axis.title = element_blank(),axis.text = element_blank()) +
-                         scale_fill_manual(values= color[i]) +ylim(0,300),height = 60),hidden(plotOutput(brand,height = "300px"))))
-           
-                         
-       })
-      
-    })
-    
-    observeEvent(input$hideshow1, {
-        # every time the button is pressed, alternate between hiding and showing the plot
-        toggle("b1")
-    })
-  
-  
- output$b1<- renderPlot({ 
-        
-        ggplot(b1(), aes(x = reorder(section, Proportion), y = Proportion,fill =section)) +
-            geom_bar(stat = "identity",width = 0.9) +coord_flip()+
-            scale_fill_brewer(palette = "Set2") +
-            theme_minimal(base_size = 16) +
-            ylab(NULL) +
-            xlab(NULL) + 
-            theme(legend.position = "none", panel.grid = element_blank(), 
-                  axis.title.x = element_blank(),axis.ticks.x = element_blank(),axis.text.x = element_blank(),axis.text.y = element_text(hjust = 0)) +
-            scale_fill_manual(values= c(alpha(rgb(146/255,120/255,194/255),0.48),alpha(rgb(191/255,114/255,189/255),0.48),alpha(rgb(232/255,107/255,171/255),0.48),
-                                        alpha(rgb(255/255,105/255,142/255),0.48),alpha(rgb(255/255,115/255,106/255),0.48)))+ylim(0,500)
-    })  
+    ggplot(b1(), aes(x = reorder(section, Proportion), y = Proportion,fill =section)) +
+      geom_bar(stat = "identity",width = 0.9) +coord_flip()+
+      scale_fill_brewer(palette = "Set2") +
+      theme_minimal(base_size = 16) +
+      ylab(NULL) +
+      xlab(NULL) + 
+      theme(legend.position = "none", panel.grid = element_blank(), 
+            axis.title.x = element_blank(),axis.ticks.x = element_blank(),axis.text.x = element_blank(),axis.text.y = element_text(hjust = 0)) +
+      scale_fill_manual(values= c(alpha(rgb(146/255,120/255,194/255),0.48),alpha(rgb(191/255,114/255,189/255),0.48),alpha(rgb(232/255,107/255,171/255),0.48),
+                                  alpha(rgb(255/255,105/255,142/255),0.48),alpha(rgb(255/255,115/255,106/255),0.48)))+ylim(0,500)
+  })  
 }
