@@ -61,29 +61,14 @@ ui <- fluidPage(
                                     
                  )),
              # hr(),
-           hidden(  div(id = "panel",
-                       tabsetPanel(
-                           tabPanel("Segment",tags$div(id ="Locations-broken-dow",tags$h5(tags$em("Location broken down by segmentation"))),
-                                    tags$div(id="outer",
-                                             # A static valueBox
-                                             plotOutput("M1",height = "120px"),
-                                             tags$div (class="expand_more_24px",
-                                                       actionButton("dropb",class="expand_more_24px", type="button" ,
-                                                                    tags$span(class="caret"))),
-                                             tags$div( class ="dt",DT::dataTableOutput("mytable"))),
-                                    tags$div(id="outer",
-                                             plotOutput("M2",height = "120px"),
-                                             tags$div (class="expand_more_24px",
-                                                       tags$button (class="expand_more_24px", type="button" ,
-                                                                    tags$span(class="caret")))
-                                             # plotOutput("M3",height = "400px")
-                                    )
-                           ), 
-                           tabPanel("Location", uiOutput("Categories")), 
-                         
-                         tabPanel("Category")
-                       )
+            hidden(div(id = "panel", tabsetPanel(
+                        
+                         tabPanel("Malls", uiOutput("Categories"))
                        
-             )))
+                       )))
+                       
+             
+    
+    )
     
     )
