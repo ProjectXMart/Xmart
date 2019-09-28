@@ -61,7 +61,7 @@ ui <- fluidPage(
                                     
                  )),
              # hr(),
-             fluidRow( column=4,
+           hidden(  div(id = "panel",
                        tabsetPanel(
                            tabPanel("Segment",tags$div(id ="Locations-broken-dow",tags$h5(tags$em("Location broken down by segmentation"))),
                                     tags$div(id="outer",
@@ -79,19 +79,11 @@ ui <- fluidPage(
                                              # plotOutput("M3",height = "400px")
                                     )
                            ), 
-                           tabPanel("Location", verbatimTextOutput("summary"),fluidRow(style = "border-bottom: 1px solid rgba(0, 0, 0, .2);",
-                                                                                       column(3, offset = 1, br(), br(),br(),
-                                                                                              textOutput("m1_1"),tags$head(tags$style("#m1_1{font-weight: bold; font-size: 120%; text-align: left; vertical-align: middle;}")),
-                                                                                              textOutput("m1_2"),tags$head(tags$style("#m1_2{font-size: 100%; opacity: 0.75; text-align: left; vertical-align: top;}"))),
-                                                                                       column(8,tags$h4("Top Retail Category Opportunity",align = "left"), plotOutput(outputId = "Mall1", height = "200px"))),
-                                    fluidRow(style = "border_bottom: 1px solid rgba(0, 0, 0, .2);",
-                                             column(3, offset = 1, br(),
-                                                    textOutput("m2_1"),tags$head(tags$style("#m2_1{font-weight: bold;font-size: 120%; text-align: left; vertical-align: middle;}")),
-                                                    textOutput("m2_2"),tags$head(tags$style("#m2_2{font-size: 100%; opacity: 0.75; text-align: left; vertical-align: top;}"))),
-                                             column(8, plotOutput(outputId = "Mall2", height = "200px")))), 
-                           
-                           tabPanel("Category", tableOutput("table"),fluidRow(column(1),style = "border-bottom: 1px solid rgba(0, 0, 0, .2);",
-                                                                              column(8,tags$h4("Brand Index",align = "left",opacity = 0.4), plotOutput(outputId = "b1", height = "200px"))))
+                           tabPanel("Location", uiOutput("Categories")), 
+                         
+                         tabPanel("Category")
                        )
                        
              )))
+    
+    )
