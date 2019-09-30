@@ -54,18 +54,20 @@ ui <- fluidPage(
                      
                    
                       #   add_markers(data = df, info_window = "info")
-                   google_mapOutput(outputId = "map")
+                   google_mapOutput(outputId = "map"),
+                      uiOutput("Details"),
+                     uiOutput("Allocation")
                      
                      
                   
                                     
                  )),
              # hr(),
-            hidden(div(id = "panel", tabsetPanel(
+           hidden(div(id = "panel",
                         
                          tabPanel("Malls", uiOutput("Categories"))
                        
-                       )))
+                       ))
                        
              
     
