@@ -56,12 +56,66 @@ server <- function(input, output,session) {
   }
   )
   
- tradearea = read.csv("C:/Users/ali518/Desktop/X-Mart/Trial1/tradearea_new.csv")
+     tradearea = read.csv("C:/Users/ali518/Desktop/X-Mart/Trial1/tradearea_new.csv")
      tradearea = tradearea$PostCode
+  
+  
+  #Euclidean part
+  
+  ####Read the datasets#####
+
+##Dataset of Malls
+bestmalls<-readRDS(file = "G:/My Drive/Project X-Mart/Final Dataset to use/bestmalls.rds")
+
+names(bestmalls)
+
+##Dataset for PC for Euclidean Distance
+pceuclidean<-readRDS(file = "G:/My Drive/Project X-Mart/Final Dataset to use/pceuclidean.rds")
+
+names(pceuclidean)
+
+##Joining with our tradearea dataframe
+evaldata<-merge(tradearea,pceuclidean)
+
+evaldata$Tot<-evaldata$A+evaldata$B+evaldata$C+evaldata$D+evaldata$E+evaldata$F+evaldata$G+evaldata$H+evaldata$I+evaldata$J+evaldata$K+evaldata$L+evaldata$M+evaldata$N+evaldata$O+evaldata$P+evaldata$Q+evaldata$R
+
+evaldata_sum<-evaldata%>%group_by(Address)%>%summarise(Books=sum(Books),Clothing=sum(Clothing),Furniture=sum(Furniture),Home_Improvement=sum(Home_Improvement),Jewellery=sum(Jewellery),Optical=sum(Optical),Pet=sum(Pet),Restaurants=sum(Restaurants),Shoes=sum(Shoes),Sports=sum(Sports),Toys=sum(Toys),A=sum(A),B=sum(B),C=sum(C),D=sum(D),E=sum(E),Fi=sum(F),G=sum(G),H=sum(H),I=sum(I),J=sum(J),K=sum(K),L=sum(L),M=sum(M),N=sum(N),O=sum(O),P=sum(P),Q=sum(Q),R=sum(R))
+
+for(i in 13:30){
+  evaldata_sum[i]<-evaldata_sum[i]/evaldata_sum[31]
+}
+
+for(j in 1:1){
+  a1<-as.numeric(evaldata_sum[c(2:26)])
+  for(k in 1:nrow(bestmalls)){
+    b1<-as.numeric(bestmalls[k,c(2:26)])
+    bestmalls$Distance[k]<-dist(a1,b1)
+  }
+  mallone<-bestmalls[order(Distance)]
+  mallalloc<-mallone[1]
+  mallorder<-mallalloc[c(27:38)]
+}
+
+mallorderplot<-mallorder
+
+for(j in 2:nrow(evaldata_sum)){
+  a1<-as.numeric(evaldata_sum[c(2:26)])
+  for(k in 1:nrow(bestmalls)){
+    b1<-as.numeric(bestmalls[k,c(2:26)])
+    bestmalls$Distance[k]<-dist(a1,b1)
+  }
+  mallone<-bestmalls[order(Distance)]
+  mallalloc<-mallone[1]
+  mallorder<-mallalloc[c(27:38)]
+  mallorderplot<-rbind(mallorderplot,mallorder)
+}
+
+evaldata_sum_plot<-cbind(evaldata_sum,mallorderplot)
 
     
 
-        p = read.csv("C:/Users/ali518/Desktop/X-Mart/Trial1/persona.csv")
+       
+        p = readRDS("C:/Users/ali518/Desktop/X-Mart/persona.rds")
         persona = p %>% filter(PostCode %in% tradearea)
         persona = count(persona, Segmentation)
         persona$n = round(persona$n*100/sum(persona$n),0)
@@ -69,20 +123,24 @@ server <- function(input, output,session) {
         persona <- persona %>%
           mutate(item = "Persona")
         
-        
-        test= readRDS("C:/Users/ali518/Desktop/X-Mart/table.rds")
-        test = test %>% filter(PostCode %in% tradearea)
-        test = test %>% filter(Segmentation %in% persona$Segmentation)
-        test = test %>% group_by(Segmentation) %>% summarise_if(is.numeric,mean)
-        test = t(test)
-       
-        
+      
+        p_table = p[,c(1,3,12,6,2,ncol(p))]
+        p_table[,2:5] = round(p_table[,2:5]*100,2)
+        colnames(p_table)[2] = "Percentage of management Occupations"
+        colnames(p_table)[3] = "Percentage of university certificate or diploma below bachelor level"
+        colnames(p_table)[4] = "Percentage of occupations in art, culture, recreation and sport"
+        colnames(p_table)[5] = "Percentage of number of familities with 5 or more persons"
+        p_table = p_table %>% filter(PostCode %in% tradearea)
+        p_table = p_table %>% filter(Segmentation %in% persona$Segmentation)
+        p_table = p_table %>% group_by(Segmentation) %>% summarise_if(is.numeric,mean)
+        p_table = t(p_table)
+        p_table = p_table[-2,]
 
 
      
 
-      affluence = read.csv("C:/Users/ali518/Desktop/X-Mart/Trial1/affluence.csv")
-      affluence = affluence %>% filter(PostCode %in% tradearea)
+      a = readRDS("C:/Users/ali518/Desktop/X-Mart/affluence.rds")
+      affluence = a %>% filter(PostCode %in% tradearea)
       affluence = count(affluence, Segmentation)
       affluence$n = round(affluence$n*100/sum(affluence$n),0)
       affluence = affluence[affluence$n != 0, ]
@@ -90,12 +148,25 @@ server <- function(input, output,session) {
         mutate(item = "Affluence")
         
       affluence <- affluence[order(affluence$n),]
+      
+      a_table = a[,c(1,4,2,13,17,10,3,ncol(a))]
+      colnames(a_table)[2] = "Average Household Income"
+      colnames(a_table)[3] = "Total Expenditure"
+      colnames(a_table)[4] = "Mortgage: Other real estate in Canada & foreign"
+      colnames(a_table)[5] = "Credit Card and Installment debt"
+      colnames(a_table)[6] = "Percentage House Hold with income range $100,000-$124,999"
+      colnames(a_table)[7] = "Average Value of Dewelling"
+      a_table = a_table %>% filter(PostCode %in% tradearea)
+      a_table = a_table %>% filter(Segmentation %in% affluence$Segmentation)
+      a_table = a_table %>% group_by(Segmentation) %>% summarise_if(is.numeric,mean)
+      a_table = t(a_table)
+      a_table = a_table[-2,]
     
     
     
   
-      behaviour = read.csv("C:/Users/ali518/Desktop/X-Mart/Trial1/behaviour.csv")
-      behaviour = behaviour %>% filter(PostCode %in% tradearea)
+      b = readRDS("C:/Users/ali518/Desktop/X-Mart/behaviour.rds")
+      behaviour = b %>% filter(PostCode %in% tradearea)
       behaviour = count(behaviour, Segmentation)
       behaviour$n = round(behaviour$n*100/sum(behaviour$n),0)
       behaviour = behaviour[behaviour$n != 0, ]
@@ -103,6 +174,21 @@ server <- function(input, output,session) {
         mutate(item = "Behaviour")
       
       behaviour <- behaviour[order(behaviour$n),]
+      
+      
+      b_table = b
+      b_table[,2:6] = round(b_table[,2:6],2)
+      colnames(b_table)[2] = "Attitude about Advertising: 'New and improved' on packages is just an advertising gimmick"
+      colnames(b_table)[3] = "Health Consciousness: I would like to eat healthy foods more often"
+      colnames(b_table)[4] = "Opinion about New Products: I have tried a product/service based on a personal recommendation"
+      colnames(b_table)[5] = "Brand Loyalty: I value companies who give back to the community"
+      colnames(b_table)[6] = "Cost Sensitivity:I prefer to postpone a purchase than buy on credit"
+      b_table = b_table %>% filter(PostCode %in% tradearea)
+      b_table = b_table %>% filter(Segmentation %in% affluence$Segmentation)
+      b_table = b_table %>% group_by(Segmentation) %>% summarise_if(is.numeric,mean)
+      b_table = t(b_table)
+      b_table = b_table[-2,]
+      
 
 
 
@@ -301,7 +387,17 @@ server <- function(input, output,session) {
     
     
     output$table_persona <- renderTable({
-      test
+     p_table
+    }, rownames = TRUE, colnames = FALSE)
+    
+    
+    output$table_affluence <- renderTable({
+      a_table
+    }, rownames = TRUE, colnames = FALSE)
+    
+    
+    output$table_behaviour <- renderTable({
+      b_table
     }, rownames = TRUE, colnames = FALSE)
     
     
@@ -312,6 +408,17 @@ server <- function(input, output,session) {
     observeEvent(input$p, {
       toggle("table_persona")
     })
+    
+    observeEvent(input$a, {
+      toggle("table_affluence")
+    })
+    
+    observeEvent(input$b, {
+      toggle("table_behaviour")
+    })
+    
+    
+    
     
     observeEvent(input$alloc, {
       toggleModal(session,"sq_all","open")
