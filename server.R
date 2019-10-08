@@ -1,6 +1,6 @@
 server = function(input, output,session) {
   output$map1 <-renderGoogle_map({
-    map_key <- "AIzaSyD6AfICWEZMcI40_Alta3JTLlHD-im2LRk"
+    map_key <- ""
     set_key(key =map_key)
     google_map(key = map_key)
 
@@ -10,7 +10,7 @@ server = function(input, output,session) {
   observeEvent(input$button, {
     
     
-    register_google(key="AIzaSyD6AfICWEZMcI40_Alta3JTLlHD-im2LRk")
+    register_google(key="")
 
     if (input$inputId == "Single") {
 
@@ -58,7 +58,7 @@ server = function(input, output,session) {
 
       tafsa1 <-merge(tafsa,x)
       output$map <-renderGoogle_map({
-        map_key <- "AIzaSyD6AfICWEZMcI40_Alta3JTLlHD-im2LRk"
+        map_key <- ""
         set_key(key =map_key)
         google_map(data = tafsa1, key = map_key) %>%
           add_markers(lat = "Lat", lon = "Lng", mouse_over = "FSA" ) %>%
@@ -160,7 +160,7 @@ server = function(input, output,session) {
     #   write.csv(tradearea,"tradearea_new.csv")
     #   
     #   output$map <-renderGoogle_map({
-    #     map_key <- "AIzaSyD6AfICWEZMcI40_Alta3JTLlHD-im2LRk"
+    #     map_key <- ""
     #     set_key(key =map_key)
     #     google_map(data = tradearea, key = map_key) %>%
     #       add_markers(lat = "Lat.x", lon = "Lng.y", info_window = "FSA")
